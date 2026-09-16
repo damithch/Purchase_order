@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import { PurchaseOrderData, POItemData } from "@/types/po";
-import { Plus, Trash2, Building2, Truck, FileText, DollarSign, UserCheck, Sparkles } from "lucide-react";
+import { Plus, Trash2, Building2, Truck, FileText, DollarSign, UserCheck, Sparkles, Upload, Image as ImageIcon, X } from "lucide-react";
 
 interface POFormProps {
   data: PurchaseOrderData;
@@ -11,6 +11,14 @@ interface POFormProps {
 }
 
 export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const parseNum = (val: any) => {
+    if (val === "" || val === undefined || val === null) return 0;
+    const n = parseFloat(val);
+    return isNaN(n) ? 0 : n;
+  };
+
   const updateField = (field: keyof PurchaseOrderData, value: any) => {
     const updated = { ...data, [field]: value };
     recalculateTotals(updated);
@@ -20,13 +28,12 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
     const newItems = [...data.items];
     const item = { ...newItems[index] };
 
+    (item as any)[field] = value;
+
     if (field === "qty" || field === "unitPrice") {
-      const qty = field === "qty" ? Number(value) || 0 : item.qty;
-      const unitPrice = field === "unitPrice" ? Number(value) || 0 : item.unitPrice;
-      item[field] = Number(value) || 0;
+      const qty = parseNum(field === "qty" ? value : item.qty);
+      const unitPrice = parseNum(field === "unitPrice" ? value : item.unitPrice);
       item.total = qty * unitPrice;
-    } else {
-      (item as any)[field] = value;
     }
 
     newItems[index] = item;
@@ -54,11 +61,33 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
     recalculateTotals(updated);
   };
 
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert("Image size should be under 2MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        updateField("companyLogo", event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearLogo = () => {
+    updateField("companyLogo", "");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const recalculateTotals = (poData: PurchaseOrderData) => {
-    const subtotal = poData.items.reduce((sum, item) => sum + (item.total || 0), 0);
-    const tax = Number(poData.tax) || 0;
-    const shipping = Number(poData.shipping) || 0;
-    const other = Number(poData.other) || 0;
+    const subtotal = poData.items.reduce((sum, item) => sum + (parseNum(item.total) || 0), 0);
+    const tax = parseNum(poData.tax);
+    const shipping = parseNum(poData.shipping);
+    const other = parseNum(poData.other);
     const total = subtotal + tax + shipping + other;
 
     onChange({
@@ -90,11 +119,102 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
         </button>
       </div>
 
+      {/* LOGO & COMPANY INFO */}
+      <div className="space-y-4 bg-slate-50/70 p-4 border border-slate-200 rounded-xl">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1.5">
+          <ImageIcon className="w-4 h-4 text-emerald-600" />
+          Company Header &amp; Logo
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          {/* Logo Uploader / Preview */}
+          <div className="md:col-span-4 flex flex-col items-center justify-center p-3 bg-white border border-slate-200 rounded-lg space-y-2">
+            {data.companyLogo ? (
+              <div className="relative group w-24 h-20 flex items-center justify-center border border-slate-200 rounded overflow-hidden p-1 bg-white">
+                {/* eslint-disable-next-next/no-img-element */}
+                <img
+                  src={data.companyLogo}
+                  alt="Company Logo Preview"
+                  className="max-w-full max-h-full object-contain"
+                />
+                <button
+                  type="button"
+                  onClick={clearLogo}
+                  className="absolute top-1 right-1 bg-rose-600 text-white p-1 rounded-full opacity-80 hover:opacity-100 shadow transition-opacity"
+                  title="Remove Logo"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ) : (
+              <div className="w-full text-center py-3">
+                <ImageIcon className="w-8 h-8 text-slate-300 mx-auto mb-1" />
+                <span className="text-[11px] text-slate-400 block font-medium">Default Logo Active</span>
+              </div>
+            )}
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleLogoUpload}
+              accept="image/png, image/jpeg, image/webp, image/svg+xml"
+              className="hidden"
+            />
+
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md border border-slate-300 transition-colors"
+            >
+              <Upload className="w-3.5 h-3.5 text-emerald-600" />
+              Upload Company Logo
+            </button>
+          </div>
+
+          {/* Company Text Fields */}
+          <div className="md:col-span-8 space-y-2.5">
+            <div>
+              <label className="block text-[11px] font-medium text-slate-600 mb-0.5">
+                Company Name
+              </label>
+              <input
+                type="text"
+                value={data.companyName}
+                onChange={(e) => updateField("companyName", e.target.value)}
+                className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-md focus:ring-2 focus:ring-emerald-500 font-semibold"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium text-slate-600 mb-0.5">
+                Company Address
+              </label>
+              <input
+                type="text"
+                value={data.companyAddress}
+                onChange={(e) => updateField("companyAddress", e.target.value)}
+                className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-md focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-medium text-slate-600 mb-0.5">
+                Company Phone
+              </label>
+              <input
+                type="text"
+                value={data.companyPhone}
+                onChange={(e) => updateField("companyPhone", e.target.value)}
+                className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-md focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* PO METADATA & CURRENCY */}
       <div className="space-y-4">
         <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
           <FileText className="w-4 h-4 text-emerald-600" />
-          Document Metadata
+          Document Metadata &amp; Currency
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
@@ -121,15 +241,16 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
           </div>
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Currency Symbol
+              Currency
             </label>
             <select
               value={data.currency}
               onChange={(e) => updateField("currency", e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
+              className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white font-semibold text-emerald-800"
             >
-              <option value="₹">₹ (INR / LKR / ₹)</option>
               <option value="LKR">LKR (Sri Lankan Rupee)</option>
+              <option value="Rs.">Rs. (Rupees)</option>
+              <option value="₹">₹ (INR / ₹)</option>
               <option value="$">$ (USD)</option>
               <option value="€">€ (EUR)</option>
               <option value="£">£ (GBP)</option>
@@ -261,7 +382,7 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
       <div className="space-y-4">
         <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
           <UserCheck className="w-4 h-4 text-emerald-600" />
-          Requisition & Shipping Details
+          Requisition &amp; Shipping Details
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div>
@@ -365,8 +486,8 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
                   Qty
                 </label>
                 <input
-                  type="number"
-                  min="1"
+                  type="text"
+                  inputMode="numeric"
                   value={item.qty}
                   onChange={(e) => updateItem(idx, "qty", e.target.value)}
                   className="w-full px-2 py-1.5 text-center border border-slate-300 rounded-md font-medium"
@@ -375,13 +496,14 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
 
               <div className="col-span-4 sm:col-span-2">
                 <label className="block text-[10px] text-slate-500 font-medium">
-                  Unit Price
+                  Unit Price ({data.currency})
                 </label>
                 <input
-                  type="number"
-                  step="0.01"
+                  type="text"
+                  inputMode="decimal"
                   value={item.unitPrice}
                   onChange={(e) => updateItem(idx, "unitPrice", e.target.value)}
+                  placeholder="27081.00"
                   className="w-full px-2 py-1.5 text-right border border-slate-300 rounded-md font-medium"
                 />
               </div>
@@ -390,7 +512,7 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
                 <span className="block text-[10px] text-slate-500 font-normal sm:hidden">
                   Total
                 </span>
-                {item.total.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                {parseNum(item.total).toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </div>
 
               <div className="col-span-1 text-right">
@@ -433,9 +555,10 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
                 Tax ({data.currency})
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 value={data.tax}
-                onChange={(e) => updateField("tax", Number(e.target.value))}
+                onChange={(e) => updateField("tax", e.target.value)}
                 className="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-md text-right"
               />
             </div>
@@ -444,9 +567,10 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
                 Shipping ({data.currency})
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 value={data.shipping}
-                onChange={(e) => updateField("shipping", Number(e.target.value))}
+                onChange={(e) => updateField("shipping", e.target.value)}
                 className="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-md text-right"
               />
             </div>
@@ -455,9 +579,10 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
                 Other ({data.currency})
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 value={data.other}
-                onChange={(e) => updateField("other", Number(e.target.value))}
+                onChange={(e) => updateField("other", e.target.value)}
                 className="w-full px-2 py-1.5 text-xs border border-slate-300 rounded-md text-right"
               />
             </div>
@@ -465,7 +590,7 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
           <div className="pt-2 border-t border-slate-200 flex justify-between items-center text-sm font-bold text-slate-900">
             <span>Calculated Total:</span>
             <span className="text-emerald-700 font-extrabold text-base">
-              {data.currency} {data.total.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              {data.currency} {parseNum(data.total).toLocaleString("en-US", { minimumFractionDigits: 2 })}
             </span>
           </div>
         </div>

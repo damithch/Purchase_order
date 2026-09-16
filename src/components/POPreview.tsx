@@ -5,19 +5,24 @@ import { PurchaseOrderData } from "@/types/po";
 
 interface POPreviewProps {
   data: PurchaseOrderData;
-  logoUrl?: string;
 }
 
-export const POPreview: React.FC<POPreviewProps> = ({ data, logoUrl }) => {
-  const formatMoney = (amount: number) => {
-    if (amount === 0 || isNaN(amount)) return "-";
-    return amount.toLocaleString("en-US", {
+export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
+  const parseNum = (val: any) => {
+    const num = parseFloat(val);
+    return isNaN(num) ? 0 : num;
+  };
+
+  const formatMoney = (amount: number | string) => {
+    const val = parseNum(amount);
+    if (val === 0) return "-";
+    return val.toLocaleString("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
   };
 
-  // We want to ensure at least 15 visible rows in the table for standard PO sheet structure
+  // We ensure at least 14 rows in table to match standard printed PO sheet layout
   const minRows = 14;
   const displayedItems = [...data.items];
   const emptyRowsCount = Math.max(0, minRows - displayedItems.length);
@@ -32,14 +37,25 @@ export const POPreview: React.FC<POPreviewProps> = ({ data, logoUrl }) => {
         {/* Company Details & Logo */}
         <div className="flex flex-col items-start space-y-2">
           <div className="flex items-center space-x-3">
-            {logoUrl || data.companyLogo ? (
+            {data.companyLogo ? (
+              <div className="w-16 h-16 relative flex items-center justify-center overflow-hidden border border-gray-200 rounded-md p-1 bg-white">
+                {/* Custom Uploaded Logo */}
+                {/* eslint-disable-next-next/no-img-element */}
+                <img
+                  src={data.companyLogo}
+                  alt="Company Logo"
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
+            ) : (
+              /* Default Styled Brand Badge */
               <div className="w-16 h-16 relative flex items-center justify-center bg-gradient-to-tr from-orange-600 to-amber-500 rounded-md p-1 shadow">
                 <div className="w-full h-full flex flex-col items-center justify-center text-white font-black leading-none">
                   <span className="text-2xl font-serif tracking-tighter">m</span>
                   <span className="text-[7px] tracking-wider uppercase font-semibold">Mobile</span>
                 </div>
               </div>
-            ) : null}
+            )}
             <div>
               <h1 className="font-bold text-sm text-gray-900">{data.companyName}</h1>
               {data.companyAddress.split(",").map((line, idx) => (
@@ -181,7 +197,7 @@ export const POPreview: React.FC<POPreviewProps> = ({ data, logoUrl }) => {
                   {item.description}
                 </td>
                 <td className="py-1 px-3 border-r border-gray-300 text-center text-gray-900 font-medium">
-                  {item.qty || ""}
+                  {item.qty !== "" && item.qty !== undefined ? item.qty : ""}
                 </td>
                 <td className="py-1 px-3 border-r border-gray-300 text-right text-gray-900">
                   {formatMoney(item.unitPrice)}
@@ -251,8 +267,8 @@ export const POPreview: React.FC<POPreviewProps> = ({ data, logoUrl }) => {
               <tr className="bg-[#ffc107] text-gray-950 font-extrabold border-t-2 border-amber-500">
                 <td className="py-2 px-3 text-[12px] uppercase">TOTAL</td>
                 <td className="py-2 px-3 text-right text-[13px] tracking-tight">
-                  <span className="mr-2 font-bold">{data.currency}</span>
-                  {data.total.toLocaleString("en-US", {
+                  <span className="mr-1 font-bold">{data.currency}</span>
+                  {parseNum(data.total).toLocaleString("en-US", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
