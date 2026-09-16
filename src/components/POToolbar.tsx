@@ -71,26 +71,35 @@ export const POToolbar: React.FC<POToolbarProps> = ({ data, onSave, onNewPO }) =
     }
   };
 
+  const parseNum = (val: any) => {
+    const num = parseFloat(val);
+    return isNaN(num) ? 0 : num;
+  };
+
   return (
-    <div className="bg-slate-900 text-white px-6 py-4 rounded-xl shadow-lg flex flex-wrap items-center justify-between gap-4 print:hidden">
-      <div className="flex items-center space-x-3">
-        <div className="bg-emerald-500/20 text-emerald-400 p-2 rounded-lg">
-          <Printer className="w-5 h-5" />
-        </div>
-        <div>
-          <h3 className="text-sm font-bold tracking-tight">Purchase Order #{data.poNumber}</h3>
-          <p className="text-xs text-slate-400">Total: {data.currency} {data.total.toLocaleString()}</p>
+    <div className="bg-slate-900 text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3 print:hidden">
+      <div className="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-start">
+        <div className="flex items-center space-x-2.5">
+          <div className="bg-emerald-500/20 text-emerald-400 p-2 rounded-lg shrink-0">
+            <Printer className="w-4 h-4 sm:w-5 sm:h-5" />
+          </div>
+          <div>
+            <h3 className="text-xs sm:text-sm font-bold tracking-tight">Purchase Order #{data.poNumber}</h3>
+            <p className="text-[11px] text-slate-400">
+              Total: <span className="text-emerald-400 font-bold">{data.currency} {parseNum(data.total).toLocaleString()}</span>
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2.5">
+      <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
         {onNewPO && (
           <button
             onClick={onNewPO}
             type="button"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors border border-slate-700"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors border border-slate-700"
           >
-            <PlusCircle className="w-4 h-4 text-emerald-400" />
+            <PlusCircle className="w-3.5 h-3.5 text-emerald-400" />
             New PO
           </button>
         )}
@@ -98,9 +107,9 @@ export const POToolbar: React.FC<POToolbarProps> = ({ data, onSave, onNewPO }) =
         <button
           onClick={handlePrint}
           type="button"
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors border border-slate-700"
+          className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors border border-slate-700"
         >
-          <Printer className="w-4 h-4 text-sky-400" />
+          <Printer className="w-3.5 h-3.5 text-sky-400" />
           Print
         </button>
 
@@ -108,12 +117,12 @@ export const POToolbar: React.FC<POToolbarProps> = ({ data, onSave, onNewPO }) =
           onClick={handleExportPDF}
           disabled={isExportingPdf}
           type="button"
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors border border-slate-700 disabled:opacity-50"
+          className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors border border-slate-700 disabled:opacity-50"
         >
           {isExportingPdf ? (
-            <Loader2 className="w-4 h-4 text-amber-400 animate-spin" />
+            <Loader2 className="w-3.5 h-3.5 text-amber-400 animate-spin" />
           ) : (
-            <Download className="w-4 h-4 text-amber-400" />
+            <Download className="w-3.5 h-3.5 text-amber-400" />
           )}
           Download PDF
         </button>
@@ -123,14 +132,14 @@ export const POToolbar: React.FC<POToolbarProps> = ({ data, onSave, onNewPO }) =
             onClick={handleSaveToDb}
             disabled={isSaving}
             type="button"
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-md transition-all disabled:opacity-50"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-md transition-all disabled:opacity-50"
           >
             {isSaving ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
             ) : saveSuccess ? (
-              <Check className="w-4 h-4 text-white" />
+              <Check className="w-3.5 h-3.5 text-white" />
             ) : (
-              <Save className="w-4 h-4" />
+              <Save className="w-3.5 h-3.5" />
             )}
             {saveSuccess ? "Saved!" : "Save to Database"}
           </button>
