@@ -49,6 +49,11 @@ export interface PurchaseOrderData {
   total: number;
   currency: string;
 
+  // Signature Details
+  signatureImage?: string;
+  signatoryName?: string;
+  signatoryTitle?: string;
+
   comments: string;
   contactInfo: string;
   status: 'DRAFT' | 'ISSUED' | 'PAID' | 'CANCELLED';
@@ -96,6 +101,10 @@ export const INITIAL_PO_DATA: PurchaseOrderData = {
   other: 0,
   total: 812430.00,
   currency: "LKR",
+
+  signatureImage: "",
+  signatoryName: "Authorized Manager",
+  signatoryTitle: "Purchasing Department",
 
   comments: "",
   contactInfo: "[Name, Phone #, E-mail]",

@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react";
 import { PurchaseOrderData, POItemData } from "@/types/po";
+import { SignaturePad } from "@/components/SignaturePad";
 import { Plus, Trash2, Building2, Truck, FileText, DollarSign, UserCheck, Sparkles, Upload, Image as ImageIcon, X, CreditCard, Calendar } from "lucide-react";
 
 interface POFormProps {
@@ -613,6 +614,27 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
           ))}
         </div>
       </div>
+
+      {/* E-SIGNATURE PAD EDITOR */}
+      <SignaturePad
+        signatureImage={data.signatureImage}
+        signatoryName={data.signatoryName}
+        signatoryTitle={data.signatoryTitle}
+        onSave={(sigData) => {
+          onChange({
+            ...data,
+            signatureImage: sigData.signatureImage,
+            signatoryName: sigData.signatoryName,
+            signatoryTitle: sigData.signatoryTitle,
+          });
+        }}
+        onClear={() => {
+          onChange({
+            ...data,
+            signatureImage: "",
+          });
+        }}
+      />
 
       {/* FINANCIAL ADJUSTMENTS & COMMENTS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-200 pt-6">

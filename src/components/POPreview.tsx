@@ -22,8 +22,8 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
     });
   };
 
-  // We ensure at least 14 rows in table to match standard printed PO sheet layout
-  const minRows = 14;
+  // We ensure at least 12 rows in table to match standard printed PO sheet layout cleanly with signature
+  const minRows = 12;
   const displayedItems = [...data.items];
   const emptyRowsCount = Math.max(0, minRows - displayedItems.length);
 
@@ -234,11 +234,11 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
         </table>
       </div>
 
-      {/* COMMENTS AND TOTALS BOTTOM SECTION */}
-      <div className="grid grid-cols-12 gap-4 items-start mb-8">
+      {/* COMMENTS, TOTALS & AUTHORIZED SIGNATURE */}
+      <div className="grid grid-cols-12 gap-4 items-start mb-6">
         {/* Comments Box (Left side 7 cols) */}
-        <div className="col-span-7">
-          <div className="border border-[#00a651] rounded-sm overflow-hidden min-h-[110px]">
+        <div className="col-span-7 space-y-3">
+          <div className="border border-[#00a651] rounded-sm overflow-hidden min-h-[90px]">
             <div className="bg-[#00a651] text-white font-bold px-3 py-1 text-[11px] uppercase">
               Comments or Special Instructions
             </div>
@@ -292,8 +292,39 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
         </div>
       </div>
 
+      {/* AUTHORIZED SIGNATURE SECTION */}
+      <div className="grid grid-cols-12 gap-4 items-end mb-6 pt-4 border-t border-gray-200">
+        <div className="col-span-6 text-left">
+          <p className="text-[10px] text-gray-500">
+            Order Status: <span className="font-bold text-gray-800 uppercase">{data.status || "ISSUED"}</span>
+          </p>
+        </div>
+        <div className="col-span-6 flex flex-col items-end text-right space-y-1">
+          {data.signatureImage ? (
+            <div className="h-14 w-44 flex items-center justify-end overflow-hidden">
+              {/* eslint-disable-next-next/no-img-element */}
+              <img
+                src={data.signatureImage}
+                alt="Authorized Signature"
+                className="max-h-full max-w-full object-contain"
+              />
+            </div>
+          ) : (
+            <div className="h-10 w-44 border-b-2 border-gray-400"></div>
+          )}
+          <div className="w-44 border-t border-gray-400 pt-1 text-center">
+            <p className="font-bold text-gray-900 text-[11px]">
+              {data.signatoryName || "Authorized Signature"}
+            </p>
+            {data.signatoryTitle && (
+              <p className="text-gray-600 text-[10px]">{data.signatoryTitle}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* FOOTER CONTACT LINE */}
-      <div className="mt-8 pt-4 border-t border-gray-200 text-center text-gray-600 text-[11px]">
+      <div className="mt-4 pt-3 border-t border-gray-200 text-center text-gray-600 text-[11px]">
         If you have any questions about this purchase order, please contact
         <br />
         <span className="font-semibold text-gray-800">{data.contactInfo || "[Name, Phone #, E-mail]"}</span>
