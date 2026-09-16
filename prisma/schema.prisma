@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model PurchaseOrder {
+  id              String      @id @default(uuid())
+  poNumber        String      @unique
+  date            String
+  
+  // Company Details
+  companyLogo     String?
+  companyName     String
+  companyAddress  String
+  companyPhone    String
+
+  // Vendor Details
+  vendorName      String
+  vendorTin       String?
+  vendorAddress   String
+  vendorDept      String?
+  vendorEmail     String?
+
+  // Ship To Details
+  shipToCompany   String
+  shipToAddress   String
+  shipToPhone     String
+
+  // Shipping Info
+  requisitioner   String?
+  shipVia         String?
+  fob             String?
+  shippingTerms   String?
+
+  // Financials
+  subtotal        Float
+  tax             Float       @default(0)
+  shipping        Float       @default(0)
+  other           Float       @default(0)
+  total           Float
+  currency        String      @default("₹")
+
+  comments        String?
+  contactInfo     String?
+  status          String      @default("ISSUED") // DRAFT, ISSUED, PAID, CANCELLED
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  items           POItem[]
+}
+
+model POItem {
+  id              String        @id @default(uuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @onDelete: Cascade fields: [purchaseOrderId], references: [id])
+  
+  itemNumber      String
+  description     String
+  qty             Int
+  unitPrice       Float
+  total           Float
+}
+
+model SavedVendor {
+  id          String   @id @default(uuid())
+  name        String
+  tin         String?
+  address     String
+  dept        String?
+  email       String?
+  createdAt   DateTime @default(now())
+}
