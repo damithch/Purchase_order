@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 import { PurchaseOrderData, POItemData } from "@/types/po";
 import { SignaturePad } from "@/components/SignaturePad";
-import { Plus, Trash2, Building2, Truck, FileText, DollarSign, UserCheck, Sparkles, Upload, Image as ImageIcon, X, CreditCard, Calendar } from "lucide-react";
+import { Plus, Trash2, Building2, Truck, FileText, DollarSign, UserCheck, Sparkles, Upload, Image as ImageIcon, X, CreditCard, Calendar, Palette } from "lucide-react";
 
 interface POFormProps {
   data: PurchaseOrderData;
@@ -98,6 +98,15 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
     });
   };
 
+  const presetColors = [
+    { name: "Emerald Green", hex: "#00a651" },
+    { name: "Ocean Blue", hex: "#0284c7" },
+    { name: "Royal Navy", hex: "#1e3a8a" },
+    { name: "Crimson Red", hex: "#dc2626" },
+    { name: "Deep Purple", hex: "#7c3aed" },
+    { name: "Charcoal Dark", hex: "#1f2937" },
+  ];
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-8 text-slate-800">
       <div className="flex items-center justify-between border-b border-slate-200 pb-4">
@@ -118,6 +127,51 @@ export const POForm: React.FC<POFormProps> = ({ data, onChange, onResetSample })
           <Sparkles className="w-3.5 h-3.5" />
           Load Sample Data
         </button>
+      </div>
+
+      {/* DOCUMENT THEME COLOR PICKER */}
+      <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+          <Palette className="w-4 h-4 text-emerald-600" />
+          Document Theme &amp; Receipt Header Color
+        </h3>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            {presetColors.map((color) => (
+              <button
+                key={color.hex}
+                type="button"
+                onClick={() => updateField("themeColor", color.hex)}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                  (data.themeColor || "#00a651").toLowerCase() === color.hex.toLowerCase()
+                    ? "border-slate-900 ring-2 ring-emerald-500 bg-white shadow-sm"
+                    : "border-slate-200 bg-white hover:bg-slate-50"
+                }`}
+              >
+                <span
+                  className="w-3.5 h-3.5 rounded-full border border-black/10 inline-block"
+                  style={{ backgroundColor: color.hex }}
+                ></span>
+                {color.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Custom Color Input */}
+          <div className="flex items-center gap-2 bg-white px-3 py-1.5 border border-slate-200 rounded-lg">
+            <span className="text-xs font-semibold text-slate-600">Custom Color:</span>
+            <input
+              type="color"
+              value={data.themeColor || "#00a651"}
+              onChange={(e) => updateField("themeColor", e.target.value)}
+              className="w-7 h-7 rounded border border-slate-300 cursor-pointer bg-transparent p-0"
+              title="Choose Custom Color"
+            />
+            <span className="font-mono text-xs text-slate-700 uppercase font-bold">
+              {data.themeColor || "#00a651"}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* LOGO & COMPANY INFO */}

@@ -8,6 +8,8 @@ interface POPreviewProps {
 }
 
 export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
+  const themeColor = data.themeColor || "#00a651";
+
   const parseNum = (val: any) => {
     const num = parseFloat(val);
     return isNaN(num) ? 0 : num;
@@ -22,7 +24,7 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
     });
   };
 
-  // We ensure at least 12 rows in table to match standard printed PO sheet layout cleanly with signature
+  // Ensure at least 12 rows in table to match standard printed PO sheet layout cleanly
   const minRows = 12;
   const displayedItems = [...data.items];
   const emptyRowsCount = Math.max(0, minRows - displayedItems.length);
@@ -79,7 +81,10 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
 
         {/* PO Title & Meta */}
         <div className="text-right">
-          <h1 className="text-3xl font-extrabold tracking-tight text-[#00a651] uppercase mb-3">
+          <h1
+            style={{ color: themeColor }}
+            className="text-3xl font-extrabold tracking-tight uppercase mb-3"
+          >
             PURCHASE ORDER
           </h1>
           <div className="inline-block border border-gray-300 rounded overflow-hidden">
@@ -110,8 +115,11 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
       {/* VENDOR & SHIP TO TWO-COLUMN GRID */}
       <div className="grid grid-cols-2 gap-4 mb-4">
         {/* VENDOR BOX */}
-        <div className="border border-[#00a651] rounded-sm overflow-hidden">
-          <div className="bg-[#00a651] text-white font-bold px-3 py-1 uppercase text-[11px] tracking-wide">
+        <div style={{ borderColor: themeColor }} className="border rounded-sm overflow-hidden">
+          <div
+            style={{ backgroundColor: themeColor }}
+            className="text-white font-bold px-3 py-1 uppercase text-[11px] tracking-wide"
+          >
             VENDOR
           </div>
           <div className="p-2.5 min-h-[90px] text-[11px] space-y-0.5">
@@ -132,8 +140,11 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
         </div>
 
         {/* SHIP TO BOX */}
-        <div className="border border-[#00a651] rounded-sm overflow-hidden">
-          <div className="bg-[#00a651] text-white font-bold px-3 py-1 uppercase text-[11px] tracking-wide">
+        <div style={{ borderColor: themeColor }} className="border rounded-sm overflow-hidden">
+          <div
+            style={{ backgroundColor: themeColor }}
+            className="text-white font-bold px-3 py-1 uppercase text-[11px] tracking-wide"
+          >
             SHIP TO
           </div>
           <div className="p-2.5 min-h-[90px] text-[11px] space-y-0.5">
@@ -151,14 +162,14 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
       </div>
 
       {/* REQUISITION / SHIPPING & PAYMENT TERMS BAR */}
-      <div className="border border-[#00a651] rounded-sm overflow-hidden mb-4">
+      <div style={{ borderColor: themeColor }} className="border rounded-sm overflow-hidden mb-4">
         <table className="w-full text-center border-collapse">
           <thead>
-            <tr className="bg-[#00a651] text-white font-bold text-[10px] uppercase">
-              <th className="w-[20%] py-1 px-2 border-r border-emerald-400">REQUISITIONER</th>
-              <th className="w-[20%] py-1 px-2 border-r border-emerald-400">SHIP VIA</th>
-              <th className="w-[20%] py-1 px-2 border-r border-emerald-400">F.O.B.</th>
-              <th className="w-[20%] py-1 px-2 border-r border-emerald-400">PAYMENT TYPE</th>
+            <tr style={{ backgroundColor: themeColor }} className="text-white font-bold text-[10px] uppercase">
+              <th className="w-[20%] py-1 px-2 border-r border-white/30">REQUISITIONER</th>
+              <th className="w-[20%] py-1 px-2 border-r border-white/30">SHIP VIA</th>
+              <th className="w-[20%] py-1 px-2 border-r border-white/30">F.O.B.</th>
+              <th className="w-[20%] py-1 px-2 border-r border-white/30">PAYMENT TYPE</th>
               <th className="w-[20%] py-1 px-2">TERMS / CREDIT</th>
             </tr>
           </thead>
@@ -170,7 +181,7 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
               <td className="py-1 px-2 border-r border-gray-300 font-bold text-gray-900 uppercase">
                 {data.paymentType || "CASH"}
               </td>
-              <td className="py-1 px-2 font-semibold text-emerald-800">
+              <td className="py-1 px-2 font-semibold text-gray-900">
                 {getPaymentTermsDisplay()}
               </td>
             </tr>
@@ -179,20 +190,20 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
       </div>
 
       {/* ITEMS TABLE */}
-      <div className="border border-[#00a651] rounded-sm overflow-hidden mb-4">
+      <div style={{ borderColor: themeColor }} className="border rounded-sm overflow-hidden mb-4">
         <table className="w-full border-collapse text-[11px]">
           <thead>
-            <tr className="bg-[#00a651] text-white font-bold text-[10px] uppercase">
-              <th className="py-1.5 px-3 text-left w-[22%] border-r border-emerald-400">
+            <tr style={{ backgroundColor: themeColor }} className="text-white font-bold text-[10px] uppercase">
+              <th className="py-1.5 px-3 text-left w-[22%] border-r border-white/30">
                 ITEM #
               </th>
-              <th className="py-1.5 px-3 text-left w-[44%] border-r border-emerald-400">
+              <th className="py-1.5 px-3 text-left w-[44%] border-r border-white/30">
                 DESCRIPTION
               </th>
-              <th className="py-1.5 px-3 text-center w-[10%] border-r border-emerald-400">
+              <th className="py-1.5 px-3 text-center w-[10%] border-r border-white/30">
                 QTY
               </th>
-              <th className="py-1.5 px-3 text-right w-[12%] border-r border-emerald-400">
+              <th className="py-1.5 px-3 text-right w-[12%] border-r border-white/30">
                 UNIT PRICE
               </th>
               <th className="py-1.5 px-3 text-right w-[12%]">
@@ -238,8 +249,11 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
       <div className="grid grid-cols-12 gap-4 items-start mb-6">
         {/* Comments Box (Left side 7 cols) */}
         <div className="col-span-7 space-y-3">
-          <div className="border border-[#00a651] rounded-sm overflow-hidden min-h-[90px]">
-            <div className="bg-[#00a651] text-white font-bold px-3 py-1 text-[11px] uppercase">
+          <div style={{ borderColor: themeColor }} className="border rounded-sm overflow-hidden min-h-[90px]">
+            <div
+              style={{ backgroundColor: themeColor }}
+              className="text-white font-bold px-3 py-1 text-[11px] uppercase"
+            >
               Comments or Special Instructions
             </div>
             <div className="p-2 text-[11px] text-gray-700 whitespace-pre-line">
@@ -293,7 +307,7 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
       </div>
 
       {/* AUTHORIZED SIGNATURE SECTION */}
-      <div className="grid grid-cols-12 gap-4 items-end mb-6 pt-4 border-t border-gray-200">
+      <div className="grid grid-cols-12 gap-4 items-end pt-2 border-t border-gray-200">
         <div className="col-span-6 text-left">
           <p className="text-[10px] text-gray-500">
             Order Status: <span className="font-bold text-gray-800 uppercase">{data.status || "ISSUED"}</span>
@@ -321,13 +335,6 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
             )}
           </div>
         </div>
-      </div>
-
-      {/* FOOTER CONTACT LINE */}
-      <div className="mt-4 pt-3 border-t border-gray-200 text-center text-gray-600 text-[11px]">
-        If you have any questions about this purchase order, please contact
-        <br />
-        <span className="font-semibold text-gray-800">{data.contactInfo || "[Name, Phone #, E-mail]"}</span>
       </div>
     </div>
   );

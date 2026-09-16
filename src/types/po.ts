@@ -12,6 +12,9 @@ export interface PurchaseOrderData {
   poNumber: string;
   date: string;
   
+  // Customization
+  themeColor?: string; // Default "#00a651" (Emerald Green)
+
   // Company Details
   companyLogo?: string;
   companyName: string;
@@ -55,13 +58,15 @@ export interface PurchaseOrderData {
   signatoryTitle?: string;
 
   comments: string;
-  contactInfo: string;
+  contactInfo?: string;
   status: 'DRAFT' | 'ISSUED' | 'PAID' | 'CANCELLED';
 }
 
 export const INITIAL_PO_DATA: PurchaseOrderData = {
   poNumber: "0002",
   date: "9/16/2026",
+  themeColor: "#00a651", // Original Emerald Green
+
   companyLogo: "",
   companyName: "Mobile Miracles (pvt) Ltd",
   companyAddress: "No 140, Darmapala Mawatha, Mirihella, Kegalle",
@@ -107,6 +112,6 @@ export const INITIAL_PO_DATA: PurchaseOrderData = {
   signatoryTitle: "Purchasing Department",
 
   comments: "",
-  contactInfo: "[Name, Phone #, E-mail]",
+  contactInfo: "",
   status: "ISSUED"
 };
