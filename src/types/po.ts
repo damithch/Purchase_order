@@ -30,11 +30,13 @@ export interface PurchaseOrderData {
   shipToAddress: string;
   shipToPhone: string;
 
-  // Shipping Info
+  // Shipping & Payment Info
   requisitioner: string;
   shipVia: string;
   fob: string;
   shippingTerms: string;
+  paymentType: 'CASH' | 'CREDIT';
+  creditDays?: number | string;
 
   // Items
   items: POItemData[];
@@ -55,7 +57,7 @@ export interface PurchaseOrderData {
 export const INITIAL_PO_DATA: PurchaseOrderData = {
   poNumber: "0002",
   date: "9/16/2026",
-  companyLogo: "", // Default company logo
+  companyLogo: "",
   companyName: "Mobile Miracles (pvt) Ltd",
   companyAddress: "No 140, Darmapala Mawatha, Mirihella, Kegalle",
   companyPhone: "0743251110",
@@ -74,6 +76,8 @@ export const INITIAL_PO_DATA: PurchaseOrderData = {
   shipVia: "",
   fob: "",
   shippingTerms: "",
+  paymentType: "CREDIT",
+  creditDays: 30,
 
   items: [
     {
@@ -91,7 +95,7 @@ export const INITIAL_PO_DATA: PurchaseOrderData = {
   shipping: 0,
   other: 0,
   total: 812430.00,
-  currency: "LKR", // Changed default currency to LKR
+  currency: "LKR",
 
   comments: "",
   contactInfo: "[Name, Phone #, E-mail]",

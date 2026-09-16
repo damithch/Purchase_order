@@ -27,6 +27,14 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
   const displayedItems = [...data.items];
   const emptyRowsCount = Math.max(0, minRows - displayedItems.length);
 
+  const getPaymentTermsDisplay = () => {
+    if (data.paymentType === "CASH") {
+      return "Immediate (Cash)";
+    }
+    const days = data.creditDays || 0;
+    return `${days} Days Credit`;
+  };
+
   return (
     <div
       id="po-document"
@@ -39,7 +47,6 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
           <div className="flex items-center space-x-3">
             {data.companyLogo ? (
               <div className="w-16 h-16 relative flex items-center justify-center overflow-hidden border border-gray-200 rounded-md p-1 bg-white">
-                {/* Custom Uploaded Logo */}
                 {/* eslint-disable-next-next/no-img-element */}
                 <img
                   src={data.companyLogo}
@@ -143,15 +150,16 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
         </div>
       </div>
 
-      {/* REQUISITION / SHIPPING TERMS BAR */}
+      {/* REQUISITION / SHIPPING & PAYMENT TERMS BAR */}
       <div className="border border-[#00a651] rounded-sm overflow-hidden mb-4">
         <table className="w-full text-center border-collapse">
           <thead>
             <tr className="bg-[#00a651] text-white font-bold text-[10px] uppercase">
-              <th className="w-1/4 py-1 px-2 border-r border-emerald-400">REQUISITIONER</th>
-              <th className="w-1/4 py-1 px-2 border-r border-emerald-400">SHIP VIA</th>
-              <th className="w-1/4 py-1 px-2 border-r border-emerald-400">F.O.B.</th>
-              <th className="w-1/4 py-1 px-2">SHIPPING TERMS</th>
+              <th className="w-[20%] py-1 px-2 border-r border-emerald-400">REQUISITIONER</th>
+              <th className="w-[20%] py-1 px-2 border-r border-emerald-400">SHIP VIA</th>
+              <th className="w-[20%] py-1 px-2 border-r border-emerald-400">F.O.B.</th>
+              <th className="w-[20%] py-1 px-2 border-r border-emerald-400">PAYMENT TYPE</th>
+              <th className="w-[20%] py-1 px-2">TERMS / CREDIT</th>
             </tr>
           </thead>
           <tbody>
@@ -159,7 +167,12 @@ export const POPreview: React.FC<POPreviewProps> = ({ data }) => {
               <td className="py-1 px-2 border-r border-gray-300">{data.requisitioner || "\u00A0"}</td>
               <td className="py-1 px-2 border-r border-gray-300">{data.shipVia || "\u00A0"}</td>
               <td className="py-1 px-2 border-r border-gray-300">{data.fob || "\u00A0"}</td>
-              <td className="py-1 px-2">{data.shippingTerms || "\u00A0"}</td>
+              <td className="py-1 px-2 border-r border-gray-300 font-bold text-gray-900 uppercase">
+                {data.paymentType || "CASH"}
+              </td>
+              <td className="py-1 px-2 font-semibold text-emerald-800">
+                {getPaymentTermsDisplay()}
+              </td>
             </tr>
           </tbody>
         </table>
